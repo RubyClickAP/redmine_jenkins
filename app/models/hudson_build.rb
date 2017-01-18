@@ -26,11 +26,10 @@ class HudsonBuild < ActiveRecord::Base
   acts_as_activity_provider :type => 'hudson',
                              :timestamp => "#{HudsonBuild.table_name}.finished_at",
                              :author_key => "#{HudsonBuild.table_name}.caused_by",
-                             :scope => preload(:job => :project),
-                             :permission => :view_hudson
+                             :scope => preload(:job => :project)
 
   # 活動の表示内容を規定
-  acts_as_event :title => Proc.new {|o| 
+  acts_as_event :title => Proc.new {|o|
                                   retval = "#{I18n.t(:label_build)} #{o.job.name} #{o.number}: #{o.result}" unless o.building?
                                   retval = "#{I18n.t(:label_build)} #{o.job.name} #{o.number}: #{t(:notice_building)}" if o.building?
                                   retval
@@ -42,6 +41,11 @@ class HudsonBuild < ActiveRecord::Base
                                   items.join("; ")
                                 },
                   :datetime => :finished_at
+
+  scope :visible, lambda {|*args|
+    joins(:job => :project).
+    where(Project.allowed_to_condition(args.shift || User.current, :view_hudson, *args))
+  }
 
   def project
     return nil unless job
