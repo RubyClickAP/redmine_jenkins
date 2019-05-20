@@ -20,6 +20,7 @@ class HudsonJobSettings < ActiveRecord::Base
 
   def do_rotate?
     return false unless self.build_rotate
+    return false if self.build_rotator_num_to_keep.nil?
     return false unless (self.build_rotator_days_to_keep > 0 || self.build_rotator_num_to_keep > 0)
     return true
   end
