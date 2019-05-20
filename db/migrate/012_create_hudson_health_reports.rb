@@ -1,4 +1,4 @@
-class CreateHudsonHealthReports < ActiveRecord::Migration
+class CreateHudsonHealthReports < ActiveRecord::Migration[4.2]
   def self.up
     create_table :hudson_health_reports do |t|
       t.column :hudson_job_id, :integer

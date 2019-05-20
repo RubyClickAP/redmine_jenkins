@@ -1,4 +1,4 @@
-class CreateHudsonBuildTestResults < ActiveRecord::Migration
+class CreateHudsonBuildTestResults < ActiveRecord::Migration[4.2]
   def self.up
     create_table :hudson_build_test_results do |t|
       t.column :hudson_build_id, :integer

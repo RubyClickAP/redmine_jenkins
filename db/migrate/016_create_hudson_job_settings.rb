@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), "../../app/models", 'hudson_job_settings')
 
-class CreateHudsonJobSettings < ActiveRecord::Migration
+class CreateHudsonJobSettings < ActiveRecord::Migration[4.2]
   def self.up
     create_table :hudson_job_settings do |t|
       t.column :hudson_job_id, :integer

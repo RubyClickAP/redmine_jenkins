@@ -1,4 +1,4 @@
-class AddAuthUserPassword < ActiveRecord::Migration
+class AddAuthUserPassword < ActiveRecord::Migration[4.2]
   def self.up
     add_column :hudson_settings, :auth_user, :string, :default => ''
     add_column :hudson_settings, :auth_password, :string, :default => ''

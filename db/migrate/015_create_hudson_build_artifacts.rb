@@ -1,4 +1,4 @@
-class CreateHudsonBuildArtifacts < ActiveRecord::Migration
+class CreateHudsonBuildArtifacts < ActiveRecord::Migration[4.2]
   def self.up
     create_table :hudson_build_artifacts do |t|
       t.column :hudson_build_id, :integer

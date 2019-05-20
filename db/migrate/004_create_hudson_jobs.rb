@@ -1,10 +1,10 @@
-class CreateHudsonJobs < ActiveRecord::Migration
+class CreateHudsonJobs < ActiveRecord::Migration[4.2]
   def self.up
     create_table :hudson_jobs do |t|
-      t.column :project_id, :integer
-      t.column :hudson_id, :integer
-      t.column :name, :string
-      t.column :latest_build_number, :string
+      t.integer :project_id
+      t.integer :hudson_id
+      t.string  :name, :null => false
+      t.string  :latest_build_number
       t.column :created_at, :datetime
       t.column :updated_at, :datetime
     end

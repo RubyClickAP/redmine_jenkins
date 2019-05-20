@@ -14,10 +14,10 @@ class HudsonController < ApplicationController
 
   layout 'base'
 
-  before_filter :find_project
-  before_filter :find_hudson
-  before_filter :authorize
-  before_filter :clear_flash
+  before_action :find_project
+  before_action :find_hudson
+  before_action :authorize
+  before_action :clear_flash
 
   def index
     raise HudsonNoSettingsException if @hudson.settings.new_record?

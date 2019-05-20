@@ -8,9 +8,10 @@ class Hudson
 
   include HudsonHelper
   include RexmlHelper
-
+  
   attr_accessor :project_id, :settings, :jobs
   attr_reader :project, :hudson_api_errors
+  
 
   def api_url_for(type = :user)
     return "" unless @settings
@@ -19,9 +20,11 @@ class Hudson
   end
 
   def initialize(project_id)
+    @jobs = []
     @project_id = project_id
     @project = Project.find(project_id)
     @settings = HudsonSettings.find_by_project_id(@project_id)
+
     find_jobs
     clear_hudson_api_errors
   end
@@ -56,12 +59,18 @@ class Hudson
   end
 
   def add_job(job_name)
+    tmpa = []
+    Rails.logger.info "  ==>[add_jobs]"
     retval = HudsonJob.new()
+    Rails.logger.info "  ==>  retval: " + retval.inspect
     retval.name = job_name
     retval.project_id = self.project_id
     retval.hudson_id = self.settings.id
     retval.project = self.project
-    self.jobs << retval
+    Rails.logger.info "  ==>  self.jobs: " + self.jobs.inspect
+    #self.jobs << retval
+    tmpa << retval
+    #self.jobs.push(retval)    
     return retval
   end
 
@@ -108,6 +117,10 @@ private
   end
 
   def find_jobs
+    Rails.logger.info "  ==>[find_jobs]"
+    #Rails.logger.info "  ==>  project_id: " + project_id.to_s
+    tmp = HudsonJob.where(:project_id => @project_id).order(:name).includes(:job_settings)
+    Rails.logger.info "  ==? jobs:: " + tmp.inspect
     @jobs = HudsonJob.where(:project_id => @project_id).order(:name).includes(:job_settings)
   end
 

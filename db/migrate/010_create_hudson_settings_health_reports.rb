@@ -1,4 +1,4 @@
-class CreateHudsonSettingsHealthReports < ActiveRecord::Migration
+class CreateHudsonSettingsHealthReports < ActiveRecord::Migration[4.2]
   def self.up
     create_table :hudson_settings_health_reports do |t|
       t.column :hudson_settings_id, :int

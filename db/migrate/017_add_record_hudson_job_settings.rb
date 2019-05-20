@@ -1,4 +1,4 @@
-class AddRecordHudsonJobSettings < ActiveRecord::Migration
+class AddRecordHudsonJobSettings < ActiveRecord::Migration[4.2]
   def self.up
     HudsonJob.all.each do |job|
       settings = HudsonJobSettings.new

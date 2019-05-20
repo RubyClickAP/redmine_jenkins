@@ -1,4 +1,4 @@
-class ChangeColumnHudsonBuildNumber < ActiveRecord::Migration
+class ChangeColumnHudsonBuildNumber < ActiveRecord::Migration[4.2]
   def self.up
     add_column :hudson_builds, :number_new, :integer
     HudsonBuild.all.each do |build|

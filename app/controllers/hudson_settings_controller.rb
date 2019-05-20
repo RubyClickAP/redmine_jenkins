@@ -15,24 +15,31 @@ class HudsonSettingsController < ApplicationController
 
   layout 'base'
 
-  before_filter :find_project
-  before_filter :find_hudson
-  before_filter :authorize
-  before_filter :clear_flash
+  before_action :find_project
+  before_action :find_hudson
+  before_action :authorize
+  before_action :clear_flash
 
   def edit
     if (params[:hudson_settings] != nil)
 
       @hudson.settings.project_id = @project.id
-      @hudson.settings.attributes = params[:hudson_settings]
+      #params.permit!
+      #@hudson.settings.attributes = params[:hudson_settings]
+      @hudson.settings.attributes = hudson_settings_params
+      logger.info "  ==> @hudson.settings.attrigutes: " + @hudson.settings.attributes.inspect
 
       @hudson.settings.url_for_plugin = "" unless ( check_box_to_boolean(params[:enable_url_for_plugin]) )
 
       success_to_save = @hudson.settings.save
+      logger.info "success_to_save: " + success_to_save.inspect
 
       update_health_reports params
 
+      logger.info "test"
+
       if success_to_save
+logger.info "test1"
         add_job
         update_job_settings params
         find_hudson # 一度設定を読み直さないと、destory したものが残るので ( delete_if の方が分かりやすい？ )
@@ -41,7 +48,7 @@ class HudsonSettingsController < ApplicationController
 
     end
 
-    # この find は、外部のサーバ(Hudson)にアクセスするので、before_filter には入れない
+    # この find は、外部のサーバ(Hudson)にアクセスするので、before_action には入れない
     find_hudson_jobs
 
   rescue HudsonApiException => error
@@ -49,9 +56,14 @@ class HudsonSettingsController < ApplicationController
     flash.now[:error] = ERB::Util.html_escape(error.message)
   end
 
+  def hudson_settings_params
+    #params.require(:hudson_settings).permit(:jobs => [] )
+    params.require(:hudson_settings).permit(:url, :url_for_plugin, :auth_user, :auth_password, :get_build_details, :jobs => [] )
+  end
+
   def joblist
     begin
-      # この find は、外部のサーバ(Hudson)にアクセスするので、before_filter には入れない
+      # この find は、外部のサーバ(Hudson)にアクセスするので、before_action には入れない
       # ジョブの一覧を取得するためだけなので、設定に一時値は反映するけれど、保存はしない
       @hudson.settings = HudsonSettings.new unless @hudson.settings
       @hudson.settings.url = params[:url]
@@ -178,6 +190,7 @@ private
   end
 
   def add_job
+    #logger.info "  ==> jobs: " + @hudson.settings.jobs.inspect
     @hudson.settings.jobs.each do |job_name|
       next if @hudson.get_job(job_name).is_a?(HudsonJob)
       job = @hudson.add_job(job_name)

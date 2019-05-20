@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '../../app/models', 'hudson_build')
 
-class UpdateBuilding < ActiveRecord::Migration
+class UpdateBuilding < ActiveRecord::Migration[4.2]
   def self.up
     HudsonBuild.where("building = 't'").update_all("building = 'true'")
     HudsonBuild.where("building = 'f'").update_all("building = 'false'")

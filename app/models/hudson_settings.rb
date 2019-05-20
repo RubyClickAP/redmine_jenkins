@@ -5,14 +5,30 @@ class HudsonSettings < ActiveRecord::Base
 
   include I18n
   
+  include Redmine::SafeAttributes
+
+  belongs_to :project
+  
   has_many :health_report_settings, :class_name => 'HudsonSettingsHealthReport', :dependent => :destroy
 
-  attr_accessible :url, :url_for_plugin, :auth_user, :auth_password
-  attr_accessible :get_build_details, :get_build_details, :show_compact
-  attr_accessible :jobs
+  #attr_accessor :url, :url_for_plugin, :auth_user, :auth_password
+  #attr_accessor :get_build_details, :show_compact
+  #attr_accessor :jobs
+  
+  scope :by_project, lambda { |project_id| where(:project_id => project_id) unless project_id.blank? }
 
   validates_presence_of   :project_id, :url
   validates_uniqueness_of :project_id
+  
+  attr_protected :id if ActiveRecord::VERSION::MAJOR <= 4
+  safe_attributes 'url',
+                  'url_for_plugin',
+                  'project_id',
+                  'auth_user',
+                  'auth_password',
+                  'get_build_details',
+                  'show_compact',
+                  'jobs'
 
   DELIMITER = ','
 
@@ -43,6 +59,7 @@ class HudsonSettings < ActiveRecord::Base
   end
 
   def jobs
+    #logger.info "  ==> jobs: " + read_attribute(:job_filter).inspect
     to_array(read_attribute(:job_filter))
   end
 
@@ -78,6 +95,9 @@ class HudsonSettings < ActiveRecord::Base
 
   def to_array(value)
     return [] if value == nil
+    logger.info "  ==> value: " + value
+    #logger.info "  ==>" + HudsonSettings::DELIMITER
+    logger.info "  ==>" + value.split(HudsonSettings::DELIMITER).inspect
     return value.split(HudsonSettings::DELIMITER)
   end
 
